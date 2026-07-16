@@ -56,6 +56,26 @@ def evaluer_modele(chemin_csv="data/telco_churn.csv"):
     plt.title(f"Matrice de confusion — seuil {seuil}")
     plt.savefig("reports/figures/matrice_confusion_seuil035.png", dpi=150, bbox_inches="tight")
 
+    # --- Courbe ROC et AUC ---
+    from sklearn.metrics import roc_curve, roc_auc_score
+
+    # AUC : un seul chiffre résumant la séparation des classes (indépendant du seuil)
+    auc = roc_auc_score(y_test, y_proba)
+    print(f"\nAUC (aire sous la courbe ROC) : {auc:.3f}")
+
+    # Points de la courbe : taux de faux positifs (fpr) et vrais positifs (tpr) par seuil
+    fpr, tpr, seuils = roc_curve(y_test, y_proba)
+
+    plt.figure(figsize=(7, 6))
+    plt.plot(fpr, tpr, color="#e74c3c", lw=2, label=f"Régression logistique (AUC = {auc:.3f})")
+    plt.plot([0, 1], [0, 1], color="gray", linestyle="--", label="Hasard (AUC = 0.5)")
+    plt.xlabel("Taux de faux positifs (fausses alertes)")
+    plt.ylabel("Taux de vrais positifs (rappel)")
+    plt.title("Courbe ROC — Régression logistique")
+    plt.legend(loc="lower right")
+    plt.savefig("reports/figures/courbe_roc.png", dpi=150, bbox_inches="tight")
+    print("Courbe ROC sauvegardée dans reports/figures/courbe_roc.png")
+
     return modele, X_test, y_test, y_pred
 
 
